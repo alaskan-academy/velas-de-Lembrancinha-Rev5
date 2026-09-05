@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<!--
+  LP VSL — Curso de Velas de Lembrancinha (IDV Handify™)
+  ============================================================
+  COMO PERSONALIZAR (procure pelas tags abaixo com Ctrl+F):
+
+  [CONFIG-VIDEO]  -> player VTurb já embedado dentro de #videoFrame. Para
+                      trocar de vídeo/player no VTurb, basta atualizar o
+                      código de embed (id do player + src do script) que a
+                      Converte.ai fornecer.
+
+  [CONFIG-DELAY]  -> troque DELAY_SECONDS no <script> final para definir
+                      quantos segundos após o carregamento da página o
+                      botão aparece no espaço reservado abaixo do vídeo.
+                      (o VTurb já autoplaya a aula sozinho)
+
+  [CONFIG-CTA]    -> troque o href="#" do botão .cta-btn pelo link de
+                      checkout / WhatsApp / grupo da turma.
+
+  [CONFIG-COPY]   -> troque headline, selo e legenda do vídeo pelo texto
+                      final da campanha.
+  ============================================================
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Aula Gratuita · Velas de Lembrancinha — Handify™</title>
+<meta name="description" content="Aula gratuita da Handify: aprenda a criar velas de lembrancinha do zero, com técnicas simples e acabamento profissional.">
+<meta name="theme-color" content="#0F0F0F">
+<link rel="icon" href="assets/handify-favicon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --handify-blue:#6699F3;
+    --handify-green:#72CF92;
+    --handify-yellow:#FEC649;
+    --handify-black:#0F0F0F;
+    --handify-gray-dark:#2D2D2D;
+    --handify-off-white:#F5F5F0;
+    --vh1: 1svh;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    min-height:100dvh;
+    min-height:calc(var(--vh1) * 100);
+    overflow-x:hidden;
+    background:var(--handify-black);
+    color:var(--handify-off-white);
+    font-family:'Montserrat',Arial,Helvetica,sans-serif;
+    display:flex;
+    flex-direction:column;
+    -webkit-font-smoothing:antialiased;
+    position:relative;
+    isolation:isolate;
+  }
+
+  /* ---------- Fundo ambiente: ateliê à luz de velas ---------- */
+  .bg{
+    position:fixed;
+    inset:0;
+    z-index:-2;
+    background:
+      radial-gradient(ellipse 60% 45% at 18% 82%, rgba(254,198,73,.20), transparent 60%),
+      radial-gradient(ellipse 55% 40% at 84% 78%, rgba(254,198,73,.14), transparent 60%),
+      radial-gradient(ellipse 70% 50% at 50% -10%, rgba(102,153,243,.16), transparent 60%),
+      linear-gradient(180deg, var(--handify-black) 0%, var(--handify-gray-dark) 100%);
+  }
+  .candles{
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    pointer-events:none;
+    opacity:.55;
+    filter:blur(.4px);
+  }
+  .candles svg{position:absolute;}
+  .candle .flame{
+    transform-origin:50% 100%;
+    animation:flicker 2.6s ease-in-out infinite;
+  }
+  .candle:nth-of-type(2) .flame{animation-duration:3.1s; animation-delay:.4s;}
+  .candle:nth-of-type(3) .flame{animation-duration:2.3s; animation-delay:.8s;}
+  .candle:nth-of-type(4) .flame{animation-duration:2.9s; animation-delay:.2s;}
+  @keyframes flicker{
+    0%,100%{transform:scale(1,1) translateX(0);opacity:1;}
+    25%{transform:scale(.94,1.06) translateX(.4px);opacity:.85;}
+    50%{transform:scale(1.05,.95) translateX(-.4px);opacity:1;}
+    75%{transform:scale(.97,1.03) translateX(.3px);opacity:.9;}
+  }
+
+  /* ---------- Estrutura de dobra única ---------- */
+  .stage{
+    flex:1 1 auto;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:clamp(8px, 1.6dvh, 18px);
+    padding:clamp(10px, 2.2dvh, 22px) clamp(14px, 4vw, 32px) 0;
+    text-align:center;
+  }
+
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:clamp(5px,.9dvh,8px) clamp(12px,2vw,16px);
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(15,15,15,.6);
+    backdrop-filter:blur(6px);
+    border-radius:999px;
+    font-size:clamp(11px, 1.6dvh, 13px);
+    font-weight:700;
+    letter-spacing:.04em;
+    color:var(--handify-off-white);
+    text-transform:uppercase;
+  }
+  .eyebrow .live-dot{
+    width:7px;height:7px;border-radius:50%;
+    background:#ff4d4d;
+    animation:pulse 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:1; box-shadow:0 0 0 0 rgba(255,77,77,.5);}
+    50%{opacity:.55; box-shadow:0 0 0 5px rgba(255,77,77,0);}
+  }
+
+  h1.headline{
+    margin:0;
+    max-width:820px;
+    font-weight:900;
+    line-height:1.15;
+    font-size:clamp(20px, 3.6dvh, 38px);
+    letter-spacing:-0.01em;
+  }
+  h1.headline .accent{color:var(--handify-blue);}
+
+  /* ---------- Vídeo / "sala de aula" ---------- */
+  .video-wrap{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    flex:0 1 auto;
+  }
+  .video-frame{
+    width:min(92vw, 720px);
+  }
+
+  /* ---------- Espaço reservado para o CTA com delay ---------- */
+  .cta-slot{
+    width:100%;
+    min-height:clamp(40px, 6.2dvh, 56px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .cta-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--handify-blue);
+    color:#fff;
+    text-decoration:none;
+    font-weight:700;
+    text-shadow:0 1px 2px rgba(0,0,0,.35);
+    font-size:clamp(14px, 2.1dvh, 17px);
+    padding:clamp(10px,1.6dvh,14px) clamp(20px,3.4vw,30px);
+    border-radius:8px;
+    box-shadow:0 10px 26px -8px rgba(102,153,243,.55);
+    opacity:0;
+    transform:translateY(6px);
+    transition:opacity .5s ease-out, transform .5s ease-out;
+  }
+  .cta-btn.show{opacity:1; transform:translateY(0);}
+  .cta-btn:active{transform:translateY(0) scale(.98);}
+
+  /* ---------- Rodapé Handify ---------- */
+  footer.site-footer{
+    flex:0 0 auto;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    padding-bottom:max(10px, env(safe-area-inset-bottom));
+  }
+  .brand-stripe{display:flex; width:min(220px,60vw); height:4px; border-radius:2px; overflow:hidden; margin-bottom:2px;}
+  .brand-stripe span{flex:1;}
+  .brand-stripe span:nth-child(1){background:var(--handify-blue);}
+  .brand-stripe span:nth-child(2){background:var(--handify-green);}
+  .brand-stripe span:nth-child(3){background:var(--handify-yellow);}
+  footer.site-footer p{
+    margin:0;
+    font-size:10px;
+    letter-spacing:.02em;
+    color:rgba(245,245,240,.5);
+  }
+
+  /* ---------- Mobile: layout mais enxuto e mais rápido ---------- */
+  @media (max-width:640px){
+    .stage{gap:clamp(6px,1.4dvh,12px); padding-top:clamp(8px,1.8dvh,16px);}
+    h1.headline{font-size:clamp(18px, 3.4dvh, 26px); max-width:94vw;}
+    .eyebrow{font-size:11px; padding:5px 12px;}
+    .video-frame{width:min(94vw, 720px);}
+    .candles{opacity:.35;}
+    .candles svg:nth-of-type(3), .candles svg:nth-of-type(4){display:none;}
+    footer.site-footer{gap:4px;}
+  }
+
+  @media (max-height:480px){
+    .eyebrow{display:none;}
+    .stage{gap:6px; padding:12px 14px 0;}
+    h1.headline{font-size:15px; line-height:1.25;}
+    .cta-slot{min-height:34px;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .candle .flame, .eyebrow .live-dot{animation:none;}
+    .cta-btn{transition:opacity .01s linear;}
+  }
+
+</style>
+</head>
+<body>
+
+<div class="bg" aria-hidden="true"></div>
+<div class="candles" aria-hidden="true">
+  <svg class="candle" width="46" height="90" style="left:4%; bottom:0;" viewBox="0 0 46 90">
+    <rect x="14" y="20" width="18" height="70" rx="3" fill="#F5F5F0" opacity=".18"/>
+    <rect x="14" y="20" width="18" height="70" rx="3" fill="none" stroke="#FEC649" stroke-opacity=".25"/>
+    <g class="flame">
+      <ellipse cx="23" cy="10" rx="6" ry="11" fill="#FEC649" opacity=".55"/>
+      <ellipse cx="23" cy="12" rx="3" ry="6" fill="#fff" opacity=".6"/>
+    </g>
+  </svg>
+  <svg class="candle" width="38" height="70" style="right:6%; bottom:0;" viewBox="0 0 38 70">
+    <rect x="10" y="14" width="16" height="56" rx="3" fill="#F5F5F0" opacity=".16"/>
+    <g class="flame">
+      <ellipse cx="18" cy="8" rx="5" ry="9" fill="#FEC649" opacity=".5"/>
+      <ellipse cx="18" cy="10" rx="2.5" ry="5" fill="#fff" opacity=".55"/>
+    </g>
+  </svg>
+  <svg class="candle" width="30" height="56" style="left:16%; bottom:0;" viewBox="0 0 30 56">
+    <rect x="8" y="10" width="13" height="46" rx="3" fill="#F5F5F0" opacity=".14"/>
+    <g class="flame">
+      <ellipse cx="14" cy="7" rx="4" ry="7" fill="#FEC649" opacity=".45"/>
+    </g>
+  </svg>
+  <svg class="candle" width="34" height="64" style="right:16%; bottom:0;" viewBox="0 0 34 64">
+    <rect x="9" y="12" width="15" height="52" rx="3" fill="#F5F5F0" opacity=".14"/>
+    <g class="flame">
+      <ellipse cx="16" cy="8" rx="4.5" ry="8" fill="#FEC649" opacity=".45"/>
+    </g>
+  </svg>
+</div>
+
+<main class="stage">
+
+  <p class="eyebrow"><span class="live-dot"></span> Aula ao vivo</p>
+
+  <!-- [CONFIG-COPY] -->
+  <h1 class="headline">Como Começar a Fazer Velas de Lembrancinha em Casa Para <span class="accent">Vender na Shopee</span></h1>
+
+  <div class="video-wrap">
+    <div class="video-frame" id="videoFrame">
+      <!-- [CONFIG-VIDEO]: player VTurb, sem nenhum wrapper/overlay por cima -->
+      <vturb-smartplayer id="ab-6a9c29fa8f35ba9fcde75766" style="display: block; margin: 0 auto; width: 100%; "></vturb-smartplayer>
+      <script type="text/javascript">
+        var s=document.createElement("script");
+        s.src="https://scripts.converteai.net/44a04a32-df90-4e75-8c2e-cb5f0854afa1/ab-test/6a9c29fa8f35ba9fcde75766/player.js";
+        s.async=!0;
+        document.head.appendChild(s);
+      </script>
+    </div>
+  </div>
+
+  <div class="cta-slot" id="ctaSlot">
+    <!-- [CONFIG-CTA]: troque href="#" pelo link real -->
+    <a href="#" class="cta-btn" id="ctaBtn">Quero Garantir Minha Vaga</a>
+  </div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="brand-stripe" aria-hidden="true"><span></span><span></span><span></span></div>
+  <p>© 2026 Handify. Todos os direitos reservados.</p>
+</footer>
+
+<script>
+(function(){
+  // Fallback de altura real de viewport (barras de endereço móveis)
+  function setVh(){
+    document.documentElement.style.setProperty('--vh1', (window.innerHeight * 0.01) + 'px');
+  }
+  setVh();
+  window.addEventListener('resize', setVh);
+  window.addEventListener('orientationchange', setVh);
+
+  var ctaBtn = document.getElementById('ctaBtn');
+
+  var DELAY_SECONDS = 40; // [CONFIG-DELAY] segundos até o botão aparecer (o player VTurb já autoplaya a aula)
+
+  function showCta(){
+    ctaBtn.classList.add('show');
+  }
+
+  setTimeout(showCta, DELAY_SECONDS * 1000);
+})();
+</script>
+
+</body>
+</html>
